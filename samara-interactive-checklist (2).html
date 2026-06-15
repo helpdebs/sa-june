@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Samara | Interactive Vocabulary Checklist</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=League+Spartan:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f7f1ff;
+      --panel: rgba(255,255,255,0.88);
+      --text: #1d1630;
+      --muted: #746b92;
+      --purple: #8f6bff;
+      --purple-dark: #6c4bf4;
+      --blue: #bde9ff;
+      --yellow: #fff27a;
+      --pink: #ff9be6;
+      --green: #b8ffd9;
+      --line: rgba(29,22,48,0.14);
+      --shadow: 0 16px 42px rgba(80,55,160,0.16);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 22px;
+      font-family: "Poppins", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(189,233,255,.85), transparent 32%),
+        radial-gradient(circle at 80% 10%, rgba(255,155,230,.55), transparent 28%),
+        radial-gradient(circle at 50% 90%, rgba(255,242,122,.45), transparent 30%),
+        var(--bg);
+    }
+
+    .page {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+    }
+
+    .window {
+      border: 2px solid #111;
+      border-radius: 18px 18px 10px 10px;
+      overflow: hidden;
+      background: rgba(255,255,255,.78);
+      box-shadow: 8px 8px 0 #111;
+      margin-bottom: 28px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 18px;
+      border-bottom: 2px solid #111;
+      background: linear-gradient(90deg, #dcd1ff, #bde9ff);
+    }
+
+    .brand {
+      font-family: "League Spartan", sans-serif;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: clamp(1.1rem, 2vw, 1.45rem);
+      letter-spacing: .02em;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .buttons span {
+      width: 32px;
+      height: 32px;
+      border: 2px solid #111;
+      display: grid;
+      place-items: center;
+      background: var(--pink);
+      font-weight: 800;
+    }
+
+    .hero {
+      padding: clamp(30px, 6vw, 72px) clamp(20px, 5vw, 64px);
+      background: rgba(255,255,255,.64);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 8px 12px;
+      border: 2px solid #111;
+      background: var(--yellow);
+      border-radius: 999px;
+      box-shadow: 4px 4px 0 #111;
+      font-size: .78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "League Spartan", sans-serif;
+      font-size: clamp(3rem, 8vw, 6.4rem);
+      line-height: .88;
+      text-transform: uppercase;
+      letter-spacing: -.045em;
+      max-width: 900px;
+    }
+
+    .subtitle {
+      margin-top: 22px;
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: clamp(1rem, 2vw, 1.15rem);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #111;
+      border-radius: 16px;
+      padding: 13px 18px;
+      background: white;
+      font-family: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 5px 5px 0 #111;
+      transition: .18s ease;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .btn:hover {
+      transform: translate(2px,2px);
+      box-shadow: 3px 3px 0 #111;
+    }
+
+    .btn.primary {
+      background: var(--purple);
+      color: white;
+    }
+
+    .btn.secondary {
+      background: var(--blue);
+    }
+
+    .btn.pdf {
+      background: var(--yellow);
+      color: var(--text);
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .search {
+      width: 100%;
+      border: 2px solid #111;
+      border-radius: 18px;
+      padding: 15px 18px;
+      background: rgba(255,255,255,.86);
+      box-shadow: 5px 5px 0 #111;
+      font-family: inherit;
+      font-weight: 600;
+    }
+
+    .progress {
+      border: 2px solid #111;
+      border-radius: 18px;
+      background: var(--panel);
+      padding: 14px 18px;
+      box-shadow: 5px 5px 0 #111;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 18px;
+    }
+
+    .category {
+      border: 2px solid #111;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .category-header {
+      width: 100%;
+      border: 0;
+      border-bottom: 2px solid #111;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 20px;
+      text-align: left;
+      cursor: pointer;
+      background: white;
+    }
+
+    .category:nth-child(4n+1) .category-header { background: #efe7ff; }
+    .category:nth-child(4n+2) .category-header { background: #e5f7ff; }
+    .category:nth-child(4n+3) .category-header { background: #fff8a8; }
+    .category:nth-child(4n+4) .category-header { background: #ffe2f6; }
+
+    .category-title strong {
+      display: block;
+      font-family: "League Spartan", sans-serif;
+      font-size: 1.45rem;
+      text-transform: uppercase;
+    }
+
+    .category-title span {
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    .toggle {
+      width: 36px;
+      height: 36px;
+      border: 2px solid #111;
+      background: white;
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .category-body {
+      display: none;
+      padding: 18px 20px 20px;
+    }
+
+    .category.open .category-body { display: block; }
+    .category.open .toggle { background: var(--green); }
+
+    .group-label {
+      font-family: "League Spartan", sans-serif;
+      font-size: .85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--purple-dark);
+      margin: 18px 0 10px;
+    }
+
+    .group-label:first-child {
+      margin-top: 0;
+    }
+
+    .items {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 9px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 11px 12px;
+      border-radius: 15px;
+      border: 1.5px solid var(--line);
+      background: rgba(255,255,255,.72);
+      transition: .18s ease;
+    }
+
+    .item.done {
+      background: rgba(184,255,217,.55);
+    }
+
+    .item input {
+      width: 19px;
+      height: 19px;
+      accent-color: var(--purple-dark);
+      cursor: pointer;
+    }
+
+    .chunk {
+      font-weight: 700;
+      line-height: 1.3;
+      font-size: .95rem;
+    }
+
+    .copy {
+      border: 1.5px solid #111;
+      border-radius: 10px;
+      background: white;
+      padding: 6px 9px;
+      font-size: .78rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .footer {
+      margin-top: 30px;
+      border: 2px solid #111;
+      border-radius: 24px;
+      padding: 22px;
+      background: rgba(255,255,255,.72);
+      box-shadow: 7px 7px 0 #111;
+    }
+
+    .footer h2 {
+      margin: 0 0 10px;
+      font-family: "League Spartan", sans-serif;
+      font-size: 2rem;
+      text-transform: uppercase;
+    }
+
+    .footer ol {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.8;
+      font-weight: 600;
+    }
+
+    .levels {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .levels div {
+      border: 2px solid #111;
+      border-radius: 14px;
+      background: white;
+      padding: 12px;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .levels strong {
+      display: block;
+      font-family: "League Spartan", sans-serif;
+      font-size: 1rem;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%) translateY(120px);
+      background: #111;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: .25s ease;
+      z-index: 50;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 780px) {
+      body { padding: 10px; }
+
+      .window {
+        border-radius: 14px;
+        box-shadow: 4px 4px 0 #111;
+        margin-bottom: 16px;
+      }
+
+      .topbar { padding: 10px 12px; }
+      .brand { font-size: 1rem; }
+
+      .buttons span {
+        width: 25px;
+        height: 25px;
+        font-size: .8rem;
+      }
+
+      .hero { padding: 22px 14px; }
+
+      .eyebrow {
+        font-size: .68rem;
+        padding: 6px 10px;
+        margin-bottom: 14px;
+        box-shadow: 3px 3px 0 #111;
+      }
+
+      h1 {
+        font-size: 2.55rem;
+        line-height: .9;
+      }
+
+      .subtitle {
+        margin-top: 14px;
+        font-size: .92rem;
+        line-height: 1.45;
+      }
+
+      .actions {
+        margin-top: 18px;
+        gap: 8px;
+      }
+
+      .btn {
+        padding: 10px 12px;
+        font-size: .82rem;
+        border-radius: 12px;
+        box-shadow: 3px 3px 0 #111;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .search {
+        padding: 12px 13px;
+        border-radius: 14px;
+        box-shadow: 3px 3px 0 #111;
+        font-size: .9rem;
+      }
+
+      .progress {
+        padding: 10px 12px;
+        border-radius: 14px;
+        box-shadow: 3px 3px 0 #111;
+        font-size: .88rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .category {
+        border-radius: 18px;
+        box-shadow: 0 10px 25px rgba(80,55,160,0.12);
+      }
+
+      .category-header {
+        padding: 12px 14px;
+        gap: 10px;
+      }
+
+      .category-title strong {
+        font-size: 1.18rem;
+        line-height: 1;
+      }
+
+      .category-title span {
+        font-size: .78rem;
+        line-height: 1.25;
+      }
+
+      .toggle {
+        width: 32px;
+        height: 32px;
+        font-size: 1.1rem;
+      }
+
+      .category-body { padding: 10px; }
+      .items { gap: 6px; }
+      .group-label { font-size: .78rem; margin: 14px 0 8px; }
+
+      .item {
+        grid-template-columns: auto 1fr auto;
+        gap: 8px;
+        padding: 8px 9px;
+        min-height: 44px;
+        border-radius: 12px;
+      }
+
+      .item input {
+        width: 18px;
+        height: 18px;
+      }
+
+      .chunk {
+        font-size: .84rem;
+        line-height: 1.2;
+      }
+
+      .copy {
+        padding: 5px 7px;
+        font-size: .68rem;
+        border-radius: 8px;
+      }
+
+      .footer {
+        margin-top: 18px;
+        padding: 16px;
+        border-radius: 18px;
+        box-shadow: 4px 4px 0 #111;
+      }
+
+      .footer h2 { font-size: 1.55rem; }
+
+      .footer ol {
+        font-size: .86rem;
+        line-height: 1.55;
+      }
+
+      .levels {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+    }
+
+    @media (max-width: 380px) {
+      .item { grid-template-columns: auto 1fr; }
+
+      .copy {
+        grid-column: 2;
+        justify-self: start;
+        margin-top: -2px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+
+    <section class="window">
+      <div class="topbar">
+        <div class="brand">Teacher Debs’ Classes</div>
+        <div class="buttons">
+          <span>–</span>
+          <span>□</span>
+          <span>×</span>
+        </div>
+      </div>
+
+      <div class="hero">
+        <div class="eyebrow">Interactive Vocabulary Checklist</div>
+        <h1>Samara’s Speaking Roadmap</h1>
+        <p class="subtitle">
+          Perception, personality, decisions, speculation, workplace communication and possible futures.
+        </p>
+
+        <div class="actions">
+          <a class="btn pdf" href="vocabulary-checklist-samara.pdf" download>Download PDF</a>
+          <button class="btn primary" id="expandBtn">Expand all</button>
+          <button class="btn secondary" id="resetBtn">Reset checklist</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <input type="search" id="searchInput" class="search" placeholder="Search vocabulary..." />
+      <div class="progress">
+        <span id="checkedCount">0</span>/<span id="totalCount">0</span> checked
+      </div>
+    </section>
+
+    <section class="grid" id="grid"></section>
+
+    <section class="footer">
+      <h2>How to use</h2>
+      <ol>
+        <li>Open the categories.</li>
+        <li>Check the vocabulary you already know.</li>
+        <li>Copy useful chunks and practice speaking.</li>
+        <li>Reuse these expressions in conversations and AI practice.</li>
+      </ol>
+
+      <div class="levels">
+        <div><strong>Level 1</strong>Familiar with the word</div>
+        <div><strong>Level 2</strong>Can explain it in English</div>
+        <div><strong>Level 3</strong>Can use it naturally in conversation</div>
+        <div><strong>Level 4</strong>Can use it spontaneously without thinking</div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    const categories = [
+      {
+        title: "Perception & First Impressions",
+        subtitle: "Talking about how people see each other",
+        groups: [
+          {
+            label: "Vocabulary",
+            items: [
+              "first impression", "perception", "misunderstanding", "assumption", "judgment",
+              "conclusion", "appearance", "impression", "expectation", "reputation",
+              "confidence", "competence", "observation", "status", "social skills"
+            ]
+          },
+          {
+            label: "Useful chunks",
+            items: [
+              "come across as", "be perceived as", "be seen as", "be interpreted as",
+              "be judged by", "create an impression", "jump to conclusions",
+              "prove yourself", "recognize someone's value"
+            ]
+          }
+        ]
+      },
+      {
+        title: "Personality & Behavior",
+        subtitle: "Describing people beyond appearances",
+        groups: [
+          {
+            label: "Vocabulary",
+            items: [
+              "confident", "insecure", "reserved", "expressive", "charismatic",
+              "observant", "awkward", "arrogant", "thoughtful", "nervous",
+              "quiet", "outgoing", "learned", "snobby"
+            ]
+          },
+          {
+            label: "Useful chunks",
+            items: [
+              "think carefully before speaking", "pay attention to details",
+              "feel uncomfortable in social situations", "lack confidence",
+              "hide your emotions", "express yourself clearly",
+              "struggle socially", "seek attention"
+            ]
+          }
+        ]
+      },
+      {
+        title: "Misunderstandings & Human Behavior",
+        subtitle: "Explaining what is happening underneath",
+        groups: [
+          {
+            label: "Vocabulary",
+            items: [
+              "discomfort", "insecurity", "misunderstanding", "intention", "reality",
+              "perception", "behavior", "reaction", "communication", "assumption"
+            ]
+          },
+          {
+            label: "Useful chunks",
+            items: [
+              "what people see is not always reality", "people often misunderstand...",
+              "there may be more happening underneath", "people tend to assume that...",
+              "in reality...", "from the outside...", "at first glance...",
+              "what appears to be... may actually be..."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Making Decisions",
+        subtitle: "Talking about choices and uncertainty",
+        groups: [
+          {
+            label: "Vocabulary",
+            items: [
+              "decision", "option", "alternative", "consequence", "trade-off",
+              "uncertainty", "risk", "outcome", "priority", "long-term effect",
+              "short-term benefit"
+            ]
+          },
+          {
+            label: "Useful chunks",
+            items: [
+              "weigh the options", "make a decision", "take a risk",
+              "consider the consequences", "think long-term",
+              "choose between... and...", "there is no perfect option",
+              "every choice involves sacrifice"
+            ]
+          }
+        ]
+      },
+      {
+        title: "Possibilities & Speculation",
+        subtitle: "Talking about what might be true",
+        groups: [
+          {
+            label: "Vocabulary",
+            items: [
+              "possibility", "probability", "explanation", "evidence", "clue", "assumption"
+            ]
+          },
+          {
+            label: "Structures",
+            items: [
+              "might be", "may be", "could be", "must be", "can't be"
+            ]
+          },
+          {
+            label: "Useful chunks",
+            items: [
+              "He might be tired.", "She may be frustrated.",
+              "It could be a difficult situation.", "They must be working late.",
+              "There might be many people there.", "He can't be serious."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Work & Professional Life",
+        subtitle: "Talking about workplace situations",
+        groups: [
+          {
+            label: "Vocabulary",
+            items: [
+              "productivity", "quality", "strategy", "communication", "automation",
+              "employee", "company", "manager", "workplace", "professional success",
+              "performance", "efficiency"
+            ]
+          },
+          {
+            label: "Useful chunks",
+            items: [
+              "improve productivity", "reduce quality", "make poor decisions",
+              "create problems", "work faster", "communicate effectively",
+              "invest in automation", "fix manual errors", "receive recognition"
+            ]
+          }
+        ]
+      },
+      {
+        title: "Connecting Ideas",
+        subtitle: "Advanced conversation connectors",
+        groups: [
+          {
+            label: "Connectors",
+            items: [
+              "while", "although", "even though", "however", "meanwhile",
+              "despite", "therefore", "as a result", "on the other hand", "in reality"
+            ]
+          },
+          {
+            label: "Useful chunks",
+            items: [
+              "While X..., Y...", "Even though..., ...", "However,...",
+              "As a result,...", "On the other hand,...", "Meanwhile,..."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Discussing Society & People",
+        subtitle: "High-frequency conversation vocabulary",
+        groups: [
+          {
+            label: "Vocabulary",
+            items: [
+              "attractive", "charismatic", "competence", "confidence", "treatment",
+              "personality", "influence", "social media", "attention", "value", "success"
+            ]
+          },
+          {
+            label: "Useful chunks",
+            items: [
+              "receive better treatment", "influence success", "value certain personalities",
+              "attract attention", "build credibility", "earn respect",
+              "gain trust", "create opportunities"
+            ]
+          }
+        ]
+      },
+      {
+        title: "High-Frequency Speaking Verbs",
+        subtitle: "Verbs she will use constantly",
+        groups: [
+          {
+            label: "Verbs",
+            items: [
+              "assume", "judge", "perceive", "misunderstand", "recognize", "influence",
+              "observe", "improve", "communicate", "struggle", "achieve", "trust",
+              "support", "prove", "realize", "consider"
+            ]
+          }
+        ]
+      },
+      {
+        title: "Conversation Chunks Worth Mastering",
+        subtitle: "Complete expressions",
+        groups: [
+          {
+            label: "Chunks",
+            items: [
+              "People tend to assume that...", "It depends on the situation.",
+              "From my perspective...", "I can see why people think that.",
+              "At first glance...", "In reality...", "On the other hand...",
+              "What people don't realize is that...",
+              "There's more to the story than it seems.",
+              "I wouldn't necessarily agree with that.",
+              "It might look like..., but...", "That's often misunderstood.",
+              "The main issue is...", "One possible explanation is...",
+              "It ultimately comes down to..."
+            ]
+          }
+        ]
+      }
+    ];
+
+    const grid = document.getElementById("grid");
+    const checkedCount = document.getElementById("checkedCount");
+    const totalCount = document.getElementById("totalCount");
+    const searchInput = document.getElementById("searchInput");
+    const toast = document.getElementById("toast");
+    const storageKey = "samara-vocabulary-checklist-roadmap";
+
+    let checked = JSON.parse(localStorage.getItem(storageKey) || "{}");
+
+    function save() {
+      localStorage.setItem(storageKey, JSON.stringify(checked));
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function render() {
+      const query = searchInput.value.trim().toLowerCase();
+      grid.innerHTML = "";
+
+      categories.forEach((category, categoryIndex) => {
+        const filteredGroups = category.groups.map((group, groupIndex) => {
+          const filtered = group.items
+            .map((item, itemIndex) => ({ item, itemIndex }))
+            .filter(({ item }) =>
+              item.toLowerCase().includes(query) ||
+              category.title.toLowerCase().includes(query)
+            );
+          return { ...group, groupIndex, filtered };
+        }).filter(g => g.filtered.length > 0);
+
+        if (query && filteredGroups.length === 0) return;
+
+        const article = document.createElement("article");
+        article.className = "category open";
+
+        article.innerHTML = `
+          <button class="category-header" type="button">
+            <div class="category-title">
+              <strong>${escapeHtml(category.title)}</strong>
+              <span>${escapeHtml(category.subtitle)}</span>
+            </div>
+            <div class="toggle">−</div>
+          </button>
+
+          <div class="category-body">
+            ${filteredGroups.map(group => `
+              <div class="group-label">${escapeHtml(group.label)}</div>
+              <ul class="items">
+                ${group.filtered.map(({ item, itemIndex }) => {
+                  const id = `${categoryIndex}-${group.groupIndex}-${itemIndex}`;
+                  const isChecked = checked[id];
+
+                  return `
+                    <li class="item ${isChecked ? "done" : ""}" data-id="${id}" data-text="${escapeHtml(item)}">
+                      <input type="checkbox" ${isChecked ? "checked" : ""} aria-label="${escapeHtml(item)}">
+                      <span class="chunk">${escapeHtml(item)}</span>
+                      <button class="copy" type="button">Copy</button>
+                    </li>
+                  `;
+                }).join("")}
+              </ul>
+            `).join("")}
+          </div>
+        `;
+
+        grid.appendChild(article);
+      });
+
+      attachEvents();
+      updateProgress();
+    }
+
+    function attachEvents() {
+      document.querySelectorAll(".category-header").forEach(button => {
+        button.addEventListener("click", () => {
+          const category = button.closest(".category");
+          const isOpen = category.classList.toggle("open");
+          button.querySelector(".toggle").textContent = isOpen ? "−" : "+";
+        });
+      });
+
+      document.querySelectorAll(".item input").forEach(input => {
+        input.addEventListener("change", () => {
+          const item = input.closest(".item");
+          checked[item.dataset.id] = input.checked;
+          item.classList.toggle("done", input.checked);
+          save();
+          updateProgress();
+        });
+      });
+
+      document.querySelectorAll(".copy").forEach(button => {
+        button.addEventListener("click", async () => {
+          const text = button.closest(".item").dataset.text;
+
+          try {
+            await navigator.clipboard.writeText(text);
+            showToast("Copied!");
+          } catch {
+            showToast("Copy unavailable");
+          }
+        });
+      });
+    }
+
+    function updateProgress() {
+      const total = categories.reduce((sum, category) =>
+        sum + category.groups.reduce((s, g) => s + g.items.length, 0), 0);
+      const done = Object.values(checked).filter(Boolean).length;
+
+      checkedCount.textContent = done;
+      totalCount.textContent = total;
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1400);
+    }
+
+    searchInput.addEventListener("input", render);
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      checked = {};
+      save();
+      render();
+      showToast("Checklist reset");
+    });
+
+    document.getElementById("expandBtn").addEventListener("click", () => {
+      document.querySelectorAll(".category").forEach(category => {
+        category.classList.add("open");
+        category.querySelector(".toggle").textContent = "−";
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>
